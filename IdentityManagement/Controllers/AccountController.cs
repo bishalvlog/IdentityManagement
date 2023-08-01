@@ -1,6 +1,7 @@
 ﻿using IdentityManagement.Models;
 using IdentityManagement.Models.ViewModel;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityManagement.Controllers
@@ -9,11 +10,13 @@ namespace IdentityManagement.Controllers
     {
         private readonly    UserManager<IdentityUser> _userManager;  
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IEmailSender _emailSender;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
         }
         public IActionResult Index()
         {
@@ -29,11 +32,11 @@ namespace IdentityManagement.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginVm model, string returnurl=null)
+        public async Task<IActionResult> Login(LoginVm model, string? returnurl=null)
         {
             ViewData["ReturnUrl"] = returnurl;
             returnurl = returnurl ?? Url.Content("~/");
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var result = await  _signInManager.PasswordSignInAsync(model.Email,model.Password,model.RememberMe,lockoutOnFailure:true);
                
@@ -67,9 +70,62 @@ namespace IdentityManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordVm model)
         {
+            if (ModelState.IsValid)
+            {
+                var user =await _userManager.FindByEmailAsync(model.Email);
+
+                if (user == null)
+                {
+                    return RedirectToAction("ForgotPasswordConformation");
+
+                }
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackurl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code },protocol:HttpContext.Request.Scheme);
+
+                await _emailSender.SendEmailAsync(model.Email, "Reset Password -Identity Manager", "Please reset your password by clicking here : <a href=\"" + callbackurl + "\">link</a>");
+                return RedirectToAction("ForgotPasswordConformation");
+            }
             return View(nameof(model));
         }
+        [HttpGet]
+        public IActionResult ForgotPasswordConformation()
+        {
+            return View();
+        }
 
+        [HttpGet]
+        public IActionResult ResetPasswordConformation()
+        {
+            return View();
+        }
+        [HttpGet]
+        public IActionResult ResetPassword(string code = null)
+        {
+            return code == null ? View("error") : View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(ResetPasswordVm model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+
+                if (user == null)
+                {
+                    return RedirectToAction("ResetPasswordConformation");
+
+                }
+              var results = await  _userManager.ResetPasswordAsync(user, model.Code,model.Password);
+                if (results.Succeeded)
+                {
+                    return RedirectToAction("ResetPasswordConformation");
+
+                }
+                AddError(results);
+            }
+            return View(nameof(model));
+        }
         [HttpGet]
         public async Task<IActionResult> Register(string returnurl=null)
         {
@@ -80,7 +136,7 @@ namespace IdentityManagement.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register (RegisterVm model, string returnurl =null)
+        public async Task<IActionResult> Register (RegisterVm model, string? returnurl =null)
         {
             ViewData["ReturnUrl"] = returnurl;
             returnurl =returnurl ?? Url.Content("~/");
