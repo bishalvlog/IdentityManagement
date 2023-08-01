@@ -9,6 +9,7 @@
       "IdentityManagement/1.0.0": {
         "dependencies": {
           "Mailjet.Api": "3.0.0",
+          "Microsoft.AspNetCore.Authentication.Facebook": "6.0.20",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "6.0.20",
           "Microsoft.AspNetCore.Identity.UI": "6.0.20",
           "Microsoft.EntityFrameworkCore": "6.0.20",
@@ -37,6 +38,14 @@
           "lib/netstandard1.1/Mailjet.Client.dll": {
             "assemblyVersion": "3.0.0.0",
             "fileVersion": "3.0.0.0"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Authentication.Facebook/6.0.20": {
+        "runtime": {
+          "lib/net6.0/Microsoft.AspNetCore.Authentication.Facebook.dll": {
+            "assemblyVersion": "6.0.20.0",
+            "fileVersion": "6.0.2023.32106"
           }
         }
       },
@@ -1216,6 +1225,13 @@
       "sha512": "sha512-/VeXC5+Q4e6YKcLm7yQVEJ5rBioJuXR7WVkVUVXgO/wkrd54+kGaB5/4F31iy7N4X07D97Gjxl8NlVNtcgHLsg==",
       "path": "mailjet.api/3.0.0",
       "hashPath": "mailjet.api.3.0.0.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Authentication.Facebook/6.0.20": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0NX87MKm70wSaron3iUqpVeLOdP+xwwXanrY/rt107ytnWH8H6DdcNrWO8SMA+Xzgll016FWdMb3jsvOsG8/1A==",
+      "path": "microsoft.aspnetcore.authentication.facebook/6.0.20",
+      "hashPath": "microsoft.aspnetcore.authentication.facebook.6.0.20.nupkg.sha512"
     },
     "Microsoft.AspNetCore.Cryptography.Internal/6.0.20": {
       "type": "package",

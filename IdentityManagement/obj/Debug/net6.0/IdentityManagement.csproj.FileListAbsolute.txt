@@ -76,3 +76,4 @@ E:\Ticketmanagement\IdentityManagement\IdentityManagement\bin\Debug\net6.0\Micro
 E:\Ticketmanagement\IdentityManagement\IdentityManagement\bin\Debug\net6.0\Microsoft.Extensions.FileProviders.Embedded.dll
 E:\Ticketmanagement\IdentityManagement\IdentityManagement\bin\Debug\net6.0\Newtonsoft.Json.dll
 E:\Ticketmanagement\IdentityManagement\IdentityManagement\obj\Debug\net6.0\IdentityManagement.MvcApplicationPartsAssemblyInfo.cs
+E:\Ticketmanagement\IdentityManagement\IdentityManagement\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.Facebook.dll

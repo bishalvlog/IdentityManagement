@@ -20,6 +20,11 @@ builder.Services.Configure<IdentityOptions>(opt =>
     opt.Lockout.MaxFailedAccessAttempts = 3 ;
 });
 builder.Services.AddTransient<IEmailSender,MailJetEmailSender>();
+builder.Services.AddAuthentication().AddFacebook(options=>
+{
+    options.AppId = "856434005907726";
+    options.AppSecret = "c81524e6151f8724f52a7ab5d0f99273";
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

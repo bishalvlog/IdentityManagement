@@ -1,4 +1,7 @@
 ﻿@model IdentityManagement.Models.ViewModel.LoginVm;
+
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
 <h1 class="text-info">Login</h1>
 <form method="post" asp-action="Login" asp-controller="Account" asp-route-returnurl="@ViewData["ReturnUrl"]" role="form">
 
@@ -43,6 +46,34 @@
         <a asp-action="ForgotPassword"> Forgot your Password? </a>
     </p>
 </form>
+@{
+    var schemes = await signInManager.GetExternalAuthenticationSchemesAsync();
+    var LoginProviders = schemes.ToList();
+
+}
+@if (LoginProviders.Count() > 0)
+{
+    <div class="col-md-4">
+        <section>
+            <h4>
+                User Another Services to Log in.
+            </h4>
+            <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnUrl="@ViewData["returnurl"]" method="post" role="form">
+                <div>
+                    <p>
+                        @foreach(var item in LoginProviders)
+                        {
+                            <button type="submit" class="btn btn-primary" name="provider" value="@item.Name" title="log in using your @item.Name account">@item.Name</button>
+                            
+                        }
+                    </p>
+                </div>
+            </form>
+        </section>
+    </div>
+    
+}
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
