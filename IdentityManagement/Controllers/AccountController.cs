@@ -1,5 +1,6 @@
 ﻿using IdentityManagement.Models;
 using IdentityManagement.Models.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +14,17 @@ namespace IdentityManagement.Controllers
     {
         private readonly    UserManager<IdentityUser> _userManager;  
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailSender _emailSender;
         private readonly UrlEncoder _Urlencoder;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IEmailSender emailSender,UrlEncoder Urlencoder)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, IEmailSender emailSender,UrlEncoder Urlencoder, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _Urlencoder = Urlencoder;
+            _roleManager = roleManager;
         }
         public IActionResult Index()
         {
@@ -37,6 +40,7 @@ namespace IdentityManagement.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+       
         public async Task<IActionResult> Login(LoginVm model, string? returnurl=null)
         {
             ViewData["ReturnUrl"] = returnurl;
@@ -67,8 +71,45 @@ namespace IdentityManagement.Controllers
             }
             return View(nameof(model));
         }
+        [HttpGet]
+        public async Task<IActionResult> Register(string returnurl = null)
+        {
+            if(!await _roleManager.RoleExistsAsync("Admin"))
+            {
+                //Creat Role
+                await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                await _roleManager.CreateAsync(new IdentityRole("User"));
+
+
+            }
+            ViewData["ReturnUrl"] = returnurl;
+            RegisterVm registerVm = new RegisterVm();
+            return View(registerVm);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+ 
+        public async Task<IActionResult> Register(RegisterVm model, string? returnurl = null)
+        {
+            ViewData["ReturnUrl"] = returnurl;
+            returnurl = returnurl ?? Url.Content("~/");
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Name };
+                var results = await _userManager.CreateAsync(user, model.Password);
+                if (results.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return LocalRedirect(returnurl);
+                }
+                AddError(results);
+            }
+            return View(nameof(model));
+        }
+
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult ForgotPassword()
         {
            
@@ -77,6 +118,7 @@ namespace IdentityManagement.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordVm model)
         {
             if (ModelState.IsValid)
@@ -97,12 +139,14 @@ namespace IdentityManagement.Controllers
             return View(nameof(model));
         }
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult ForgotPasswordConformation()
         {
             return View();
         }
 
         [HttpGet]
+        
         public IActionResult ResetPasswordConformation()
         {
             return View();
@@ -135,34 +179,7 @@ namespace IdentityManagement.Controllers
             }
             return View(nameof(model));
         }
-        [HttpGet]
-        public async Task<IActionResult> Register(string returnurl=null)
-        {
-            ViewData["ReturnUrl"]=returnurl;
-            RegisterVm registerVm = new RegisterVm();   
-            return View(registerVm);    
-
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register (RegisterVm model, string? returnurl =null)
-        {
-            ViewData["ReturnUrl"] = returnurl;
-            returnurl =returnurl ?? Url.Content("~/");
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Name };
-                var results = await _userManager.CreateAsync(user, model.Password); 
-                if(results.Succeeded) 
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect(returnurl);
-                }
-                AddError(results);
-            }
-            return View (nameof(model));
-        }
-
+        
         public async Task<IActionResult> LogOff()
         {
            await _signInManager.SignOutAsync(); 
@@ -171,6 +188,7 @@ namespace IdentityManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string? returnurl =null )
         {
             var redirecturl =Url.Action("ExternalLoginCallback","Account", new { ReturnUrl = returnurl });
@@ -179,6 +197,7 @@ namespace IdentityManagement.Controllers
 
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string? returnurl = null, string? remoteError =null)
         {
             returnurl = returnurl ?? Url.Content("~/");
@@ -190,7 +209,7 @@ namespace IdentityManagement.Controllers
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                return RedirectToAction(nameof(Login));
+                return RedirectToAction(nameof( Login));
 
             }
             //signin user 
@@ -215,7 +234,8 @@ namespace IdentityManagement.Controllers
             }
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]  
+        [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginConfirmation (ExternalLoginConfirmationVm confirmation, string? returnurl =null)
         {
             returnurl = returnurl ?? Url.Content("~/");
@@ -248,14 +268,13 @@ namespace IdentityManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> RemoveAuthenticator()
         {
-         
-
             var user = await _userManager.GetUserAsync(User);
             await _userManager.ResetAuthenticatorKeyAsync(user);
           await _userManager.SetTwoFactorEnabledAsync(user, false);
             return RedirectToAction(nameof(Index),"Home");
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> EnableAuthenticator()
         {
             string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
@@ -268,6 +287,7 @@ namespace IdentityManagement.Controllers
                 return View(model);
         }
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> EnableAuthenticator(TwoFactorAuthenicationVm model)
         {
             if(ModelState.IsValid)
@@ -291,6 +311,7 @@ namespace IdentityManagement.Controllers
             return View();
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> VerifyAuthenticationCode(bool rememberMe, string returnUlr = null)
         {
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
@@ -303,6 +324,7 @@ namespace IdentityManagement.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> VerifyAuthenticationCode(VerifyAuthenticatorVm model)
         {
             model.ReturnUrl = model.ReturnUrl ?? Url.Content("~/");
@@ -310,7 +332,7 @@ namespace IdentityManagement.Controllers
             {
                 return View(model);
             }
-            var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(model.Code, model.RememberMe, rememberClient: false);
+            var result = await _signInManager.TwoFactorAuthenticatorSignInAsync(model.Code, model.RememberMe, rememberClient: true);
             if (result.Succeeded)
             {
                 return LocalRedirect(model.ReturnUrl);
@@ -325,10 +347,7 @@ namespace IdentityManagement.Controllers
                 return View(model);
             }
 
-
         }
-
-
         private void AddError(IdentityResult result)
         {
             foreach (var error in result.Errors)
