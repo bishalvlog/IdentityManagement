@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "RzqI7hSK5wcb8xJW8BxKlovDfAnL4gVp00o9uEjhMNQ=",
+  "Hash": "wZ1oOqeYKYjcn1BZ2t0R031Fv6jNo6dlfRffnKPdlUI=",
   "Source": "IdentityManagement",
   "BasePath": "_content/IdentityManagement",
   "Mode": "Default",
@@ -1103,6 +1103,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "E:\\Ticketmanagement\\IdentityManagement\\IdentityManagement\\wwwroot\\js\\qrcode.js",
+      "SourceId": "IdentityManagement",
+      "SourceType": "Discovered",
+      "ContentRoot": "E:\\Ticketmanagement\\IdentityManagement\\IdentityManagement\\wwwroot\\",
+      "BasePath": "_content/IdentityManagement",
+      "RelativePath": "js/qrcode.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\qrcode.js"
     },
     {
       "Identity": "E:\\Ticketmanagement\\IdentityManagement\\IdentityManagement\\wwwroot\\js\\site.js",

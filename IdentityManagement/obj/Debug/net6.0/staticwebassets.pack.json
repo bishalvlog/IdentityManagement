@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "E:\\Ticketmanagement\\IdentityManagement\\IdentityManagement\\wwwroot\\js\\qrcode.js",
+      "PackagePath": "staticwebassets\\js\\qrcode.js"
+    },
+    {
       "Id": "E:\\Ticketmanagement\\IdentityManagement\\IdentityManagement\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

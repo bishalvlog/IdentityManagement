@@ -1,0 +1,31 @@
+﻿@model IdentityManagement.Models.ViewModel.TwoFactorAuthenicationVm
+
+<p>
+    please enter the code below in your authenticate
+</p>
+<p>
+    @Model.Token
+</p>
+<p>
+    Alternative , scan the below code 
+</p>
+<div id="qrcode">
+
+</div>
+<form method="post">
+    <input hidden asp-for="Token" />
+    <div class="form-group">
+        Enter Code : <input  type="text" class="form-control" asp-for="Code"/>
+
+    </div>
+    <button type="submit" class="btn btn-primary"> Submit</button>
+
+</form>
+@section Scripts 
+{
+    <script  src="~/js/qrcode.js"></script>
+    <script type="text/javascript">
+        new QRCode(document.getElementById("qrcode"),"@Model.QRCodeUrl");
+        </script>
+
+}
