@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace IdentityManagement.Models.ViewModel
 {
@@ -17,6 +18,8 @@ namespace IdentityManagement.Models.ViewModel
         [Display (Name ="confirm Password")]
         public string ConfirmPassword { get; set; }
         [Required]
-        public string Name { get; set; }    
+        public string Name { get; set; }  
+        public IEnumerable<SelectListItem> Roles { get; set; }  
+        public string RoleSelected { get; set; }    
     }
 }

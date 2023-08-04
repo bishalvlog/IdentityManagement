@@ -30,11 +30,16 @@ namespace IdentityManagement.Controllers
             }
             return View();
         }
-        [Authorize]
+        [Authorize (Roles ="Admin")]
         public IActionResult Privacy()
         {
             return View();
         }
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

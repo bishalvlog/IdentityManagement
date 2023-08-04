@@ -17,7 +17,15 @@
        
         <a asp-controller="Account" asp-action="EnableAuthenticator"> SetUp two Fact Auth</a>
         }
-        <br /> 
+        <br /> <br />
+        @if (User.IsInRole("Admin"))
+        {
+            <h2>Your Roles is -Admin</h2>
+        }
+        else
+        {
+            <h2>Your Roles is -User</h2>
+        }
     }
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>

@@ -1,10 +1,10 @@
 ﻿@model IdentityManagement.Models.ViewModel.RegisterVm;
 <h1 class="text-info">Register</h1>
-<form method="post" asp-action="Register" asp-controller="Account" role="form">
+<form method="post" asp-action="Register" asp-controller="Account"role="form">
 
     <h4>Create a new Account</h4>
     <hr/>
-  @*  <div asp-validation-summary="All" class="text-danger"></div>*@
+    <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group"> 
         <label asp-for="Email" class="col-md-2"></label>
         <div class="col-md-10">
@@ -31,6 +31,14 @@
         <div class="col-md-10">
             <input asp-for="ConfirmPassword" class="form-control" /> &nbsp;<i class="bi bi-eye" id="togglePassword"></i>
             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Roles" class="col-md-2"></label>
+        <div class="col-md-10">
+            <select asp-for="RoleSelected" asp-items="@Model.Roles" class="form-control">
+                <option disabled selected>--Selected Role-- </option>
+            </select>
         </div>
     </div>
     <div class="form-group">

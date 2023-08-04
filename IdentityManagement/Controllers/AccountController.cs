@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -74,40 +75,74 @@ namespace IdentityManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> Register(string returnurl = null)
         {
-            if(!await _roleManager.RoleExistsAsync("Admin"))
+            if (!await _roleManager.RoleExistsAsync("Admin"))
             {
                 //Creat Role
                 await _roleManager.CreateAsync(new IdentityRole("Admin"));
                 await _roleManager.CreateAsync(new IdentityRole("User"));
-
-
             }
+            List<SelectListItem> list = new List<SelectListItem>();
+            list.Add(new SelectListItem()
+            {
+                Value = "Admin",
+                Text = "Admin"
+
+            });
+            list.Add(new SelectListItem()
+            {
+                Value = "User",
+                Text = "User"
+            });
             ViewData["ReturnUrl"] = returnurl;
-            RegisterVm registerVm = new RegisterVm();
+            RegisterVm registerVm = new RegisterVm() {
+            Roles =list};
             return View(registerVm);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
  
-        public async Task<IActionResult> Register(RegisterVm model, string? returnurl = null)
+        public async Task<IActionResult> Register(RegisterVm model, string? returnurl)
         {
             ViewData["ReturnUrl"] = returnurl;
             returnurl = returnurl ?? Url.Content("~/");
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
+              
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Name };
                 var results = await _userManager.CreateAsync(user, model.Password);
                 if (results.Succeeded)
                 {
+                    if (model.RoleSelected != null && model.RoleSelected.Length > 0 && model.RoleSelected == "Admin")
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(user, "User");
+                    }
+                    var code =await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackurl = Url.Action("ConfirmEmail","Account" , new {userId = user.Id,code =code}, protocol: HttpContext.Request.Scheme);
+                    await _emailSender.SendEmailAsync(model.Email, "Confirm your Account - Identity Manager", "Please confirm your Account by clicking here : <a href=\"" + callbackurl + "\">link</a>");
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnurl);
                 }
                 AddError(results);
             }
-            return View(nameof(model));
+            List<SelectListItem> list = new List<SelectListItem>();
+            list.Add(new SelectListItem()
+            {
+                Value = "Admin",
+                Text = "Admin"
+
+            });
+            list.Add(new SelectListItem()
+            {
+                Value = "User",
+                Text = "User"
+            });
+            model.Roles = list;
+            return View(model);
         }
-
-
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPassword()
@@ -251,6 +286,7 @@ namespace IdentityManagement.Controllers
                 var result = await _userManager.CreateAsync(user);
                 if(result.Succeeded) 
                 {
+                    await _userManager.AddToRoleAsync(user, "User");
                     result = await _userManager.AddLoginAsync(user, info);
                     if(result.Succeeded) 
                     {
