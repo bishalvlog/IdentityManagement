@@ -10,18 +10,15 @@
     </div>
 </div>
 <div class="p-4 border rounded">
-    @if (Model.Count() > 0)
+    @if (Model.Any())
     {
         <table class="table table-striped border">
             <tr class="table-secondary">
                 <th>
-                    Email
+                    ID
                 </th>
                 <th>
                     Name
-                </th>
-                <th>
-                    Roles
                 </th>
                 <th>
 
@@ -31,9 +28,8 @@
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@item.Email</td>
+                    <td>@item.Id</td>
                     <td>@item.Name</td>
-                    <td>@item.Role</td>
                     <td></td>
                 </tr>
             }
