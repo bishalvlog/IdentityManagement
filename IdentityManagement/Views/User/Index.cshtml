@@ -37,6 +37,21 @@
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info text-white" style="cursor:pointer">
                                     Edit
                                 </a>
+                                @if(item.LockoutEnd==null || item.LockoutEnd < DateTime.Now)
+                                {
+                                    //we want to show them
+                                    <button asp-controller="LockUnlock" asp-route-user-Id="@item.Id" class=" btn btn-success text-white" style="cursor:pointer">
+                                        <span>&nbsp; lock &nbsp;</span>
+                                    </button>
+                                }
+                                else
+                                {
+                                    // we want to show them to unlock
+                                    <button asp-controller="LockUnlock" asp-route-user-Id="@item.Id" class=" btn btn-warning text-white" style="cursor:pointer">
+                                        <span>&nbsp; Unlock &nbsp;</span>
+                                    </button>
+                                    
+                                }
 
                                 <button type="submit" onclick="return confirm('are you sure you want to delete')" class="btn btn-danger">DELETE</button>
                             </form>

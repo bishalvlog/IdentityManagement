@@ -49,6 +49,7 @@ namespace IdentityManagement.Controllers
             {
                 //error
                 TempData[SD.Error] = "Role already Exits";
+                return RedirectToAction(nameof(Index));
 
             }
             if(string.IsNullOrEmpty(rolesdb.Id))
@@ -72,6 +73,27 @@ namespace IdentityManagement.Controllers
                 var result = await _roleManager.UpdateAsync(objrole);
                 TempData[SD.Success] = "Role is Updates Successfully";
             }
+            return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete (string id)
+        {
+            var objfrom =_context.Roles.FirstOrDefault(u=> u.Id == id);
+            var userRolesforThisRole = _context.UserRoles.Where(u => u.RoleId == id).Count();
+            if(userRolesforThisRole > 0)
+            {
+                TempData[SD.Error] = "Cannot delete this role, since there are user assigned to this roles";
+                return RedirectToAction(nameof(Index));
+            }
+            if (objfrom == null)
+            {
+                TempData[SD.Error] = "Role not found";
+                return RedirectToAction(nameof(Index));
+
+            }
+            await _roleManager.DeleteAsync(objfrom);
+            TempData[SD.Success] = "Role Delele Successfully.";
             return RedirectToAction(nameof(Index));
         }
     }
