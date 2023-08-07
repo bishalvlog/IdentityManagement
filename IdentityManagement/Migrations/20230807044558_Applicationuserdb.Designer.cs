@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityManagement.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230727170951_ApplicationUserDb")]
-    partial class ApplicationUserDb
+    [Migration("20230807044558_Applicationuserdb")]
+    partial class Applicationuserdb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

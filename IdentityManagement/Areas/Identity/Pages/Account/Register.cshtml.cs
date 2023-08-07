@@ -113,10 +113,10 @@ namespace IdentityManagement.Areas.Identity.Pages.Account
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                // var user = CreateUser();
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, Name = Input.Name, DateCreated = DateTime.Now };
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, Name = Input.Name };
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
